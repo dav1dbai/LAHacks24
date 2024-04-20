@@ -1,4 +1,4 @@
-import os
+
 import requests
 from dotenv import load_dotenv
 import os
@@ -6,10 +6,11 @@ import os
 load_dotenv()  # This loads the variables from .env into the environment
 
 def make_api_call():
-    '''
+    
     # Trial 1
     # Accessing the API key from an environment variable
     api_key = os.getenv('GEMINI_KEY')
+    print(api_key)
     if not api_key:
         raise ValueError("API key not found. Please set the GEMINI_KEY environment variable.")
 
@@ -48,7 +49,7 @@ def make_api_call():
             print("------")
         else:
             print(f'Failed to retrieve data for {symbol.upper()}: {response.status_code}')
-    '''
+    
 
 if __name__ == '__main__':
     make_api_call()
