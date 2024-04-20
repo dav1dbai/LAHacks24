@@ -33,7 +33,7 @@ def make_api_call():
     else:
         print(f'Failed to retrieve data: {response.status_code}')
 
-    '''
+    
     #Trial 2
     symbols = ['btcusd', 'ethusd']  # Symbols for Bitcoin and Ethereum trading pairs
     for symbol in symbols:
@@ -48,6 +48,7 @@ def make_api_call():
             print("------")
         else:
             print(f'Failed to retrieve data for {symbol.upper()}: {response.status_code}')
+    '''
 
 if __name__ == '__main__':
     make_api_call()
