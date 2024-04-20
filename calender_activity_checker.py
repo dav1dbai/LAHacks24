@@ -9,7 +9,7 @@ from PIL import Image
 import pytesseract
 
 # Set up Google Calendar API credentials from Way
-creds = Credentials.from_authorized_user_file('path/to/credentials.json', ['https://www.googleapis.com/auth/calendar.readonly']) // HAVE TO REPLACE THESE 2 VALUES
+creds = Credentials.from_authorized_user_file('path/to/credentials.json', ['https://www.googleapis.com/auth/calendar.readonly']) # HAVE TO REPLACE THESE 2 VALUES
 
 # Initialize the Calendar API service
 service = build('calendar', 'v3', credentials=creds)
@@ -31,7 +31,7 @@ def get_current_event():
 def read_screenshot():
     # Take a screenshot using a screenshot library (e.g., PyAutoGUI)
     # Replace this with the actual code to take a screenshot
-    screenshot = Image.open('path/to/screenshot.png') # HAVE TO CHANGE THIS
+    screenshot = Image.open('current_screen.png') # HAVE TO CHANGE THIS
 
     # Extract text from the screenshot using OCR (e.g., pytesseract)
     text = pytesseract.image_to_string(screenshot)
