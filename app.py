@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_cors import CORS
-from google.oauth2.credentials import Credentials
+#from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import google.generativeai as genai
 import os
 
 
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-pro-vision')
 
 #model = genai.GenerativeModel('gemini-pro')
 my_api_key_gemini = os.getenv('GEMINI_API_KEY')
@@ -31,7 +31,7 @@ def chat():
         return jsonify({"response": "Sorry, something went wrong."})
 
 if __name__ == '__main__':
-    creds = Credentials.from_authorized_user_file('token.json', ['https://www.googleapis.com/auth/calendar.readonly'])
+    #creds = Credentials.from_authorized_user_file('token.json', ['https://www.googleapis.com/auth/calendar.readonly'])
     response = model.generate_content("Why is your api bad")
     print(response)
     #app.run(debug=True)
