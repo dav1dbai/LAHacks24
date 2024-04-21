@@ -19,10 +19,10 @@ const Chatbot = () => {
       const userMessage = { text: message, isUser: true };
       setConversation((prevConversation) => [...prevConversation, userMessage]);
       setMessage('');
-  
+
       try {
         const response = await axios.post('/chat', { message: message });
-        const botMessage = { text: response.data.response, isUser: false };
+        const botMessage = { text: response.data, isUser: false };
         setConversation((prevConversation) => [...prevConversation, botMessage]);
       } catch (error) {
         console.error('Error:', error);
