@@ -3,27 +3,29 @@ import pyautogui
 import pathlib
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from datetime import datetime
+from datetime import datetime, timezone
 import textwrap
 from dotenv import load_dotenv
 import google.generativeai as genai
 from IPython.display import display
 from IPython.display import Markdown
 import PIL.Image
-#way apr 20
-#sorry this get exposed since i am not sure vishnu's secure thing works
-GOOGLE_API_KEY= 'AIzaSyAVQANU6aIGDc2ifwG5ZFils-hNrREoZ00'
+import time
+
+
+#way apr 21
+#now it can takes screenshoot, and 
+load_dotenv()
+GOOGLE_API_KEY= os.getenv('GEMINI_KEY')
 genai.configure(api_key=GOOGLE_API_KEY)
 '''
 for m in genai.list_models():
   if 'generateContent' in m.supported_generation_methods:
     print(m.name)
-'''
 def to_markdown(text):
   text = text.replace('•', '  *')
   return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
-
-
+'''
 
 def take_screenshot_and_save():
     screenshot = pyautogui.screenshot()
@@ -41,30 +43,70 @@ def get_current_event_description(service):
         return "No event description available."
     return events[0].get('summary', 'description' )
 
+def is_event_happening_now(service):
+    now = datetime.now(timezone.utc)
+    
+    # Get the current and next events
+    events_result = service.events().list(calendarId='primary', timeMin=now,
+                                          maxResults=2, singleEvents=True,
+                                          orderBy='startTime').execute()
+    events = events_result.get('items', [])
+    
+    for event in events:
+        start_time = event['start'].get('dateTime', event['start'].get('date'))
+        end_time = event['end'].get('dateTime', event['end'].get('date'))
+        
+        # Convert times to datetime objects
+        start_time = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
+        end_time = datetime.fromisoformat(end_time.replace('Z', '+00:00'))
+        
+        # Check if the current time is within the event's duration
+        print(start_time,datetime.utcnow(), end_time)
+        if start_time <= datetime.utcnow() <= end_time:
+            return True  # Event is happening now
+    
+    return False  # No event is happening now
+
+
+def check(service):
+    # Take a screenshot
+    screenshot_path = take_screenshot_and_save()
+
+    # Get current event description
+    event_description = get_current_event_description(service)
+    prompt = f"Does this screenshot match the event description: '{event_description}'?"
+    img = PIL.Image.open(screenshot_path)
+    
+    # ask gemini if this is the same event
+    model = genai.GenerativeModel('gemini-pro-vision')
+    response = model.generate_content([prompt,img])
+    print(response.text)
+    #https://ai.google.dev/gemini-api/docs/get-started/python 
+
+
 def main():
     # Setup Google Calendar API
     creds = Credentials.from_authorized_user_file('token.json', ['https://www.googleapis.com/auth/calendar.readonly'])
     service = build('calendar', 'v3', credentials=creds)
 
-    # Take a screenshot
-    screenshot_path = take_screenshot_and_save()
-    print(screenshot_path)
 
-    # Get current event description
-    event_description = get_current_event_description(service)
-    prompt = f"Does this screenshot match the event description: '{event_description}'?"
+    #about to write some logics in checking servise 
+    #1 when there is an event going on, during the strat and the end time, check every 5 minutes
+    #while (is_event_happening_now(service)):
+    check(service)
+    time.sleep(300)
 
-    img = PIL.Image.open('image.jpg')
-    img
 
-    # Initialize the Gemini API model
-    model = genai.GenerativeModel('gemini-pro-vision')
+
+    '''
+    #testing gemini-pro(text only)
+    model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content("What is the meaning of life?")
-    response = model.generate_content(img)
-    to_markdown(response.text)
-    #https://ai.google.dev/gemini-api/docs/get-started/python 
-    #the syntax is porbably a bit off, as ouputing text to text have no porblem
+    print(response.text)
+    '''
 
+   
+    
 
 if __name__ == '__main__':
     main()
