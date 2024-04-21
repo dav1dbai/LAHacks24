@@ -11,6 +11,9 @@ function Navigation() {
         <li>
           <Link to="/todo">About</Link>
         </li>
+        <li>
+          <Link to="/chat">Chat</Link>
+        </li>
       </ul>
     </nav>
   );
