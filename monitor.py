@@ -11,6 +11,7 @@ from IPython.display import display
 from IPython.display import Markdown
 import PIL.Image
 import time
+import pytz
 
 #nee to first run quickstart and then monitor would work. check why this happens.
 
@@ -45,18 +46,31 @@ def get_current_event_description(service):
     return events[0].get('summary', 'description' )
 
 def is_event_happening_now(service):
-    now = datetime.utcnow().isoformat() + 'Z'
-    print(now)
+    now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+
+    # Getting the current UTC time
+    utc_now = datetime.utcnow()
+
+    # Converting UTC time to local time, for example
+    local_timezone = pytz.timezone('America/Los_Angeles')
+    local_now = utc_now.replace(tzinfo=pytz.utc).astimezone(local_timezone)
+
+    print(local_now)
     # Get the current and next events
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                           maxResults=1, singleEvents=True,
                                           orderBy='startTime').execute()
     events = events_result.get('items', [])
     if (events):
-        return True   
-    else:
-        return False  # No event is happening now
+        event_start_str = events[0].get('start').get('dateTime')
+        print("Event start time:", event_start_str)
+        # Parse the event start time string into a datetime object
+        event_start_time = datetime.strptime(event_start_str, "%Y-%m-%dT%H:%M:%S%z")
 
+        # Compare the parsed event start time with the local time
+        if event_start_time < local_now:
+            return True   
+    return False  # No event is happening now or comparison fails
 
 def check(service):
     # Take a screenshot
