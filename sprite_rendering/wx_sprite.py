@@ -49,7 +49,7 @@ class Sprite(wx.Frame):
         #gif translation
         self.frame = 0
         self.max_frame = 7
-        self.updateImage()
+        self.updateImage("standing")
     
         #positions
         self.win = self.GetScreenPosition()
@@ -68,9 +68,15 @@ class Sprite(wx.Frame):
         #self.SetSizerAndFit(sizer)
         #self.Show()
         #self.anim_ctrl.Play()
-
-    def updateImage(self):
-        self.imgpath = rf'./assets/{self.frame}.png'
+    
+    def updateImage(self,pose):
+        pose_dict = {
+            "sitleft" : "./assets/sitleft.png",
+            "sitright" : "./assets/sitleft.png",
+            "standing" : "./assets/capystand.png",
+            "jumping" : "./assets/capyjump.png"
+        }
+        self.imgpath = pose_dict[pose]
         image = wx.Image(self.imgpath)          
         self.bmp = wx.Bitmap(image)
         self.SetClientSize((self.bmp.GetWidth(), self.bmp.GetHeight()))
@@ -103,6 +109,8 @@ class Sprite(wx.Frame):
     def OnExit(self, evt):
         self.Close()
 
+    #def MoveOrigin(self):
+    
     def OnMouseMove(self, evt):
         if evt.Dragging() and evt.LeftIsDown():
             pos = self.ClientToScreen(evt.GetPosition())
@@ -119,6 +127,12 @@ class Sprite(wx.Frame):
         dest_y = coords[1]
         dx = dest_x - self.win.x
         dy = dest_y - self.win.y
+
+        if dx < 0:
+            self.updateImage("sitleft")
+        else:
+            self.updateImage("sitright")
+
         distance = math.sqrt(dx ** 2 + dy ** 2)
         
         if distance != 0:
@@ -133,28 +147,9 @@ class Sprite(wx.Frame):
             x = self.win.x + int(step * dx_unit)
             y = self.win.y + int(step * dy_unit)
             
-            # Move the root window to the new position
-            if step % 9 == 0:
-                self.updateImage()
-                self.frame += 1
-                self.frame = self.frame % self.max_frame
-            
             self.panel.Move(wx.Point(x, y))
             self.Move(wx.Point(x, y + self.panel.GetSize()[1]))
             wx.GetApp().Yield()
             time.sleep(duration / steps)
+        self.updateImage("standing")
 
-    def jump(self, jump_height=10, jump_duration=1):
-        self.updateCoords()
-        # Calculate the jump trajectory
-        start_x, start_y = self.win.x, self.win.y
-        peak_x, peak_y = start_x, start_y - jump_height
-        end_x, end_y = start_x, start_y
-        
-        for i in range(5):
-            # Jump up
-            print(peak_x,peak_y)
-            self.traverse((peak_x, peak_y), duration=jump_duration/2)
-            # Jump down
-            print(end_x,end_y)
-            self.traverse((end_x, end_y), duration=jump_duration/2)
