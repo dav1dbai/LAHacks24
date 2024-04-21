@@ -113,67 +113,48 @@ class Sprite(wx.Frame):
         self.screen_size = wx.DisplaySize()
         self.win = self.GetScreenPosition()
 
-    def traverse(self, coords):
+    def traverse(self, coords, duration):
         self.updateCoords()
         dest_x = coords[0]
         dest_y = coords[1]
         dx = dest_x - self.win.x
         dy = dest_y - self.win.y
         distance = math.sqrt(dx ** 2 + dy ** 2)
+        
         if distance != 0:
             dx_unit = dx / distance
             dy_unit = dy / distance
         else:
             dx_unit, dy_unit = 0, 0
-
+        
         steps = int(distance)
         for step in range(steps):
             # Calculate the new position based on the step along the trajectory
-            x = self.win[0] + int(step * dx_unit)
-            y = self.win[1] + int(step * dy_unit)
+            x = self.win.x + int(step * dx_unit)
+            y = self.win.y + int(step * dy_unit)
+            
             # Move the root window to the new position
             if step % 9 == 0:
                 self.updateImage()
                 self.frame += 1
                 self.frame = self.frame % self.max_frame
-            self.panel.Move(wx.Point(x,y))
-            self.Move(wx.Point(x,y+self.panel.GetSize()[1]))
-            wx.GetApp().Yield()
-            time.sleep(0.01)
-
-    def jump(self):
-        self.updateCoords()
-        scale = 1
-        height = 30
-
-        screen_width, screen_height = wx.GetDisplaySize()  # Get the screen dimensions
-
-        for i in range(100):  # 1 second runtime
-            # Calculate the new position based on the step along the trajectory
-            if i % 20 == 0:
-                x = self.win.x
-                y = self.win.y - height
-                scale = scale * -1
-
-                # Check if the sprite goes off the left or right edge of the screen
-                if x < 0:
-                    x = 0
-                elif x + self.panel.GetSize()[0] > screen_width:
-                    x = screen_width - self.panel.GetSize()[0]
-
-                # Check if the sprite goes off the top or bottom edge of the screen
-                if y < 0:
-                    y = 0
-                elif y + self.panel.GetSize()[1] > screen_height-200:
-                    y = screen_height - 200 - self.panel.GetSize()[1]
-
-            # Move the root window to the new position
-            if i % 10 == 0:
-                self.updateImage()
-                self.frame += 1
-                self.frame = self.frame % self.max_frame
-
+            
             self.panel.Move(wx.Point(x, y))
             self.Move(wx.Point(x, y + self.panel.GetSize()[1]))
             wx.GetApp().Yield()
-            time.sleep(0.01)
+            time.sleep(duration / steps)
+
+    def jump(self, jump_height=10, jump_duration=1):
+        self.updateCoords()
+        # Calculate the jump trajectory
+        start_x, start_y = self.win.x, self.win.y
+        peak_x, peak_y = start_x, start_y - jump_height
+        end_x, end_y = start_x, start_y
+        
+        for i in range(5):
+            # Jump up
+            print(peak_x,peak_y)
+            self.traverse((peak_x, peak_y), duration=jump_duration/2)
+            # Jump down
+            print(end_x,end_y)
+            self.traverse((end_x, end_y), duration=jump_duration/2)

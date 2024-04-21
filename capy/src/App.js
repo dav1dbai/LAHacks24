@@ -1,8 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, redirect} from 'react-router-dom';
 
-import Todo from './components/todo'
+import ToDoList from './components/todo'
 import Navigation from './components/navigation';
+
+//TODO: set default to chat app
 
 function App() {
   return (
@@ -10,7 +12,7 @@ function App() {
       <div>
         <Navigation />
         <Routes>
-          <Route path="/todo" element={<Todo/>} />
+          <Route path="/todo" element={<ToDoList/>} />
         </Routes>
       </div>
     </Router>

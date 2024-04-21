@@ -22,14 +22,16 @@ def moveSpriteToApp(name):
     res = getAppCoords(name)
     print(res.data[0]['x'])
     dest = [res.data[0]['x']-50,res.data[0]['y']-230]
-    sprite.traverse(dest)
+    sprite.traverse(dest,5)
 
 # def spriteIdle():
+
+
 
 
 if __name__ == '__main__':
     apps = supabase.table('coordinates').select("app_name").execute()
     dest = random.choice(apps.data)
     moveSpriteToApp(dest['app_name'])
-    sprite.jump()
+    #sprite.jump()
     app.MainLoop()
