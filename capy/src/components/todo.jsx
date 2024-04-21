@@ -14,14 +14,14 @@ const ConfirmationItem = ({ checkimg, checkedimg, text, onClick }) => {
 
   return (
     <div className="px-4 py-2 relative">
-      <div className="flex items-center bg-tab_brown p-4 rounded-lg shadow-md w-156 h-22 border-2 border-tab_border_brown">
+      <div className="flex items-center  p-4 rounded-lg  w-156 h-1 ">
         <div className="flex-shrink-0 mr-4">
           <button className="focus:outline-none" onClick={handleClick}>
             <img src={isClicked ? checkedimg : checkimg} alt="checkbox" className="w-8 h-8 object-contain" />
           </button>
         </div>
         <div className="flex-grow">
-          <span className="text-lg text-text_brown">{text}</span>
+          <span className="text-lg text-text_brown font-ntr">{text}</span>
         </div>
       </div>
     </div>
@@ -54,7 +54,7 @@ const ToDoList = () => {
 
   return (
     <div>
-      <div className='text-lg text-tab_border_brown'>
+      <div className='text-lg text-tab_border_brown font-mitr '>
         David's To-Do's
       </div>
       <div className="space-y-4 px-4 py-2">
