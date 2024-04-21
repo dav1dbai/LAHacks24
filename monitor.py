@@ -12,6 +12,7 @@ from IPython.display import Markdown
 import PIL.Image
 import time
 
+#nee to first run quickstart and then monitor would work. check why this happens.
 
 #way apr 21
 #now it can takes screenshoot, and 
@@ -44,28 +45,17 @@ def get_current_event_description(service):
     return events[0].get('summary', 'description' )
 
 def is_event_happening_now(service):
-    now = datetime.now(timezone.utc)
-    
+    now = datetime.utcnow().isoformat() + 'Z'
+    print(now)
     # Get the current and next events
     events_result = service.events().list(calendarId='primary', timeMin=now,
-                                          maxResults=2, singleEvents=True,
+                                          maxResults=1, singleEvents=True,
                                           orderBy='startTime').execute()
     events = events_result.get('items', [])
-    
-    for event in events:
-        start_time = event['start'].get('dateTime', event['start'].get('date'))
-        end_time = event['end'].get('dateTime', event['end'].get('date'))
-        
-        # Convert times to datetime objects
-        start_time = datetime.fromisoformat(start_time.replace('Z', '+00:00'))
-        end_time = datetime.fromisoformat(end_time.replace('Z', '+00:00'))
-        
-        # Check if the current time is within the event's duration
-        print(start_time,datetime.utcnow(), end_time)
-        if start_time <= datetime.utcnow() <= end_time:
-            return True  # Event is happening now
-    
-    return False  # No event is happening now
+    if (events):
+        return True   
+    else:
+        return False  # No event is happening now
 
 
 def check(service):
@@ -92,9 +82,10 @@ def main():
 
     #about to write some logics in checking servise 
     #1 when there is an event going on, during the strat and the end time, check every 5 minutes
-    #while (is_event_happening_now(service)):
-    check(service)
-    time.sleep(300)
+    while (is_event_happening_now(service)):
+        print(is_event_happening_now(service))
+        check(service)
+        time.sleep(300) #check every 5 minuts
 
 
 
