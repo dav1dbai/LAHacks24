@@ -12,6 +12,15 @@ def createApp():
 def mainLoop():
     app.MainLoop()
 
+# class TextPanel(wx.Frame):
+global app
+
+def createApp():
+    app = wx.App()
+
+def mainLoop():
+    app.MainLoop()
+
 class TextPanel(wx.Frame):
     def __init__(self, parent, text):
         wx.Frame.__init__(self, parent, title="Text Panel", style=wx.FRAME_FLOAT_ON_PARENT | wx.STAY_ON_TOP)
